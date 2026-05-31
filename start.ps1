@@ -1,44 +1,39 @@
-# --- Java 21 のセットアップ ---
-$java21Path = "C:\Program Files\Microsoft\jdk-21.0.11.10-hotspot"
-$env:JAVA_HOME = $java21Path
-$env:PATH = "$java21Path\bin;$env:PATH"
-
-# --- Maven のセットアップ ---
-$mavenHome = "$env:USERPROFILE\.maven\apache-maven-3.9.6"
-$mavenBin  = "$mavenHome\bin\mvn.cmd"
-
-if (-not (Test-Path $mavenBin)) {
-    Write-Host "Maven not found. Downloading..." -ForegroundColor Yellow
-    $mavenZip = "$env:TEMP\maven.zip"
-    Invoke-WebRequest -Uri "https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip" `
-        -OutFile $mavenZip -UseBasicParsing
-    Expand-Archive -Path $mavenZip -DestinationPath "$env:USERPROFILE\.maven" -Force
-    Remove-Item $mavenZip
-    Write-Host "Maven installed." -ForegroundColor Green
-}
-
-$env:PATH = "$mavenHome\bin;$env:PATH"
-
-# --- DB 起動 ---
-Write-Host "Starting DB..." -ForegroundColor Cyan
 Set-Location $PSScriptRoot
-docker-compose up -d
 
-Write-Host "Waiting for PostgreSQL to be ready..."
-$maxRetry = 30
+# --- 1. DB だけ先に起動 ---
+Write-Host "Starting SQL Server..." -ForegroundColor Cyan
+docker-compose up -d db
+
+# --- 2. SQL Server が healthy になるまで待機 ---
+Write-Host "Waiting for SQL Server to be ready..."
+$maxRetry = 60
 $retry = 0
 do {
-    $healthy = docker inspect todo-postgres --format "{{.State.Health.Status}}" 2>$null
+    $healthy = docker inspect todo-sqlserver --format "{{.State.Health.Status}}" 2>$null
     if ($healthy -eq "healthy") { break }
     $retry++
     if ($retry -ge $maxRetry) {
-        Write-Host "DB did not become healthy in time." -ForegroundColor Red
+        Write-Host "SQL Server did not become healthy in time." -ForegroundColor Red
         exit 1
     }
-    Start-Sleep -Seconds 2
+    Start-Sleep -Seconds 3
 } while ($true)
+Write-Host "SQL Server is ready." -ForegroundColor Green
 
-# --- バックエンド起動 ---
-Write-Host "DB is ready. Starting backend..." -ForegroundColor Green
-Set-Location "$PSScriptRoot\backend"
-& $mavenBin spring-boot:run
+# --- 3. todo_db を作成 ---
+Write-Host "Creating database..." -ForegroundColor Yellow
+docker exec todo-sqlserver /opt/mssql-tools18/bin/sqlcmd `
+    -S localhost -U sa -P "Todo_Pass123!" -C `
+    -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'todo_db') CREATE DATABASE todo_db"
+Write-Host "Database ready." -ForegroundColor Green
+
+# --- 4. バックエンドをビルド&起動 ---
+Write-Host "Building and starting backend..." -ForegroundColor Cyan
+docker-compose up --build -d backend
+
+Write-Host ""
+Write-Host "All services started!" -ForegroundColor Green
+Write-Host "  API Health : http://localhost:8080/api/health"
+Write-Host "  GraphiQL   : http://localhost:8080/graphiql"
+Write-Host ""
+Write-Host "Logs: docker-compose logs -f backend"
