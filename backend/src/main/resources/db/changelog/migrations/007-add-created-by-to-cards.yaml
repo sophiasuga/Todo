@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-add-created-by-to-cards
+      author: sophiasuga
+      changes:
+        - addColumn:
+            tableName: cards
+            columns:
+              - column:
+                  name: created_by
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_cards_created_by
+                    references: users(id)

@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-labels
+      author: sophiasuga
+      changes:
+        - createTable:
+            tableName: labels
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_labels_board
+                    references: boards(id)
+              - column:
+                  name: name
+                  type: NVARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color
+                  type: NVARCHAR(20)
+                  constraints:
+                    nullable: false

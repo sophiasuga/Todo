@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-card-labels
+      author: sophiasuga
+      changes:
+        - createTable:
+            tableName: card_labels
+            columns:
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_labels_card
+                    references: cards(id)
+              - column:
+                  name: label_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_labels_label
+                    references: labels(id)
+        - addPrimaryKey:
+            tableName: card_labels
+            columnNames: card_id, label_id
+            constraintName: pk_card_labels

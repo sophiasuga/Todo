@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-card-assignees
+      author: sophiasuga
+      changes:
+        - createTable:
+            tableName: card_assignees
+            columns:
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_assignees_card
+                    references: cards(id)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_assignees_user
+                    references: users(id)
+        - addPrimaryKey:
+            tableName: card_assignees
+            columnNames: card_id, user_id
+            constraintName: pk_card_assignees

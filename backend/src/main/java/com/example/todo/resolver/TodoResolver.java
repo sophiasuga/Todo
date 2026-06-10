@@ -1,7 +1,9 @@
 package com.example.todo.resolver;
 
-import com.example.todo.generated.Todo;
+import com.example.todo.domain.TodoMapper;
+import com.example.todo.domain.TodoService;
 import com.example.todo.generated.CreateTodoInput;
+import com.example.todo.generated.Todo;
 import com.example.todo.generated.UpdateTodoInput;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -14,28 +16,38 @@ import java.util.Optional;
 @Controller
 public class TodoResolver {
 
+    private final TodoService todoService;
+    private final TodoMapper todoMapper;
+
+    public TodoResolver(TodoService todoService, TodoMapper todoMapper) {
+        this.todoService = todoService;
+        this.todoMapper = todoMapper;
+    }
+
     @QueryMapping
     public List<Todo> todos() {
-        return List.of();
+        return todoService.getAllTodos().stream().map(todoMapper::toTodo).toList();
     }
 
     @QueryMapping
     public Optional<Todo> todo(@Argument String id) {
-        return Optional.empty();
+        return todoService.getTodoById(id).map(todoMapper::toTodo);
     }
 
     @MutationMapping
     public Todo createTodo(@Argument CreateTodoInput input) {
-        throw new UnsupportedOperationException("Phase 2 で実装予定");
+        return todoMapper.toTodo(todoService.createTodo(input.title()));
     }
 
     @MutationMapping
     public Todo updateTodo(@Argument String id, @Argument UpdateTodoInput input) {
-        throw new UnsupportedOperationException("Phase 2 で実装予定");
+        return todoService.updateTodo(id, input.title(), input.completed())
+                .map(todoMapper::toTodo)
+                .orElse(null);
     }
 
     @MutationMapping
     public Boolean deleteTodo(@Argument String id) {
-        throw new UnsupportedOperationException("Phase 2 で実装予定");
+        return todoService.deleteTodo(id);
     }
 }

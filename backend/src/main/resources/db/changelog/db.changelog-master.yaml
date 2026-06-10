@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/migrations/001-create-users.yaml
+  - include:
+      file: db/changelog/migrations/002-create-boards.yaml
+  - include:
+      file: db/changelog/migrations/003-create-board-columns.yaml
+  - include:
+      file: db/changelog/migrations/004-create-cards.yaml
+  - include:
+      file: db/changelog/migrations/005-create-labels.yaml
+  - include:
+      file: db/changelog/migrations/006-create-card-labels.yaml
+  - include:
+      file: db/changelog/migrations/007-add-created-by-to-cards.yaml
+  - include:
+      file: db/changelog/migrations/008-create-board-members.yaml
+  - include:
+      file: db/changelog/migrations/009-create-card-assignees.yaml
+  - include:
+      file: db/changelog/migrations/010-create-comments.yaml
+  - include:
+      file: db/changelog/migrations/011-create-todos.yaml

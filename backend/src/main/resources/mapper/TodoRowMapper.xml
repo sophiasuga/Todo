@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todo.infrastructure.persistence.TodoRowMapper">
+
+  <resultMap id="BaseResultMap" type="com.example.todo.infrastructure.persistence.TodoRow">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="NVARCHAR" property="title" />
+    <result column="completed" jdbcType="BIT" property="completed" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, title, completed, created_at
+  </sql>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from todos
+    order by created_at desc
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from todos
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <insert id="insert" parameterType="com.example.todo.infrastructure.persistence.TodoRow"
+          useGeneratedKeys="true" keyProperty="id">
+    insert into todos (title, completed, created_at)
+    values (#{title,jdbcType=NVARCHAR}, #{completed,jdbcType=BIT}, #{createdAt,jdbcType=TIMESTAMP})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.example.todo.infrastructure.persistence.TodoRow">
+    update todos
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=NVARCHAR},
+      </if>
+      <if test="completed != null">
+        completed = #{completed,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from todos
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+</mapper>

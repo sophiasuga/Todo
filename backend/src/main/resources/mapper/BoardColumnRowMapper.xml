@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.todo.infrastructure.persistence.BoardColumnRowMapper">
+  <resultMap id="BaseResultMap" type="com.example.todo.infrastructure.persistence.BoardColumnRow">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="board_id" jdbcType="BIGINT" property="boardId" />
+    <result column="title" jdbcType="NVARCHAR" property="title" />
+    <result column="position" jdbcType="INTEGER" property="position" />
+    <result column="color" jdbcType="NVARCHAR" property="color" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, board_id, title, position, color
+  </sql>
+  <select id="selectByExample" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRowExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from board_columns
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from board_columns
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from board_columns
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRowExample">
+    delete from board_columns
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRow">
+    insert into board_columns (id, board_id, title, 
+      position, color)
+    values (#{id,jdbcType=BIGINT}, #{boardId,jdbcType=BIGINT}, #{title,jdbcType=NVARCHAR}, 
+      #{position,jdbcType=INTEGER}, #{color,jdbcType=NVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRow">
+    insert into board_columns
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="boardId != null">
+        board_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="position != null">
+        position,
+      </if>
+      <if test="color != null">
+        color,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="boardId != null">
+        #{boardId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=NVARCHAR},
+      </if>
+      <if test="position != null">
+        #{position,jdbcType=INTEGER},
+      </if>
+      <if test="color != null">
+        #{color,jdbcType=NVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRowExample" resultType="java.lang.Long">
+    select count(*) from board_columns
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update board_columns
+    <set>
+      <if test="row.id != null">
+        id = #{row.id,jdbcType=BIGINT},
+      </if>
+      <if test="row.boardId != null">
+        board_id = #{row.boardId,jdbcType=BIGINT},
+      </if>
+      <if test="row.title != null">
+        title = #{row.title,jdbcType=NVARCHAR},
+      </if>
+      <if test="row.position != null">
+        position = #{row.position,jdbcType=INTEGER},
+      </if>
+      <if test="row.color != null">
+        color = #{row.color,jdbcType=NVARCHAR},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update board_columns
+    set id = #{row.id,jdbcType=BIGINT},
+      board_id = #{row.boardId,jdbcType=BIGINT},
+      title = #{row.title,jdbcType=NVARCHAR},
+      position = #{row.position,jdbcType=INTEGER},
+      color = #{row.color,jdbcType=NVARCHAR}
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRow">
+    update board_columns
+    <set>
+      <if test="boardId != null">
+        board_id = #{boardId,jdbcType=BIGINT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=NVARCHAR},
+      </if>
+      <if test="position != null">
+        position = #{position,jdbcType=INTEGER},
+      </if>
+      <if test="color != null">
+        color = #{color,jdbcType=NVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.todo.infrastructure.persistence.BoardColumnRow">
+    update board_columns
+    set board_id = #{boardId,jdbcType=BIGINT},
+      title = #{title,jdbcType=NVARCHAR},
+      position = #{position,jdbcType=INTEGER},
+      color = #{color,jdbcType=NVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

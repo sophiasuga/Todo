@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-create-comments
+      author: sophiasuga
+      changes:
+        - createTable:
+            tableName: comments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comments_card
+                    references: cards(id)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_comments_user
+                    references: users(id)
+              - column:
+                  name: content
+                  type: NVARCHAR(MAX)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME2
+                  defaultValueComputed: GETDATE()
+                  constraints:
+                    nullable: false
